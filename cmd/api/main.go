@@ -12,7 +12,7 @@ func main() {
 	mux.HandleFunc("/health", httpapi.Health)
 
 	srv := http.Server{
-		Addr: ":8080",
+		Addr:    ":8080",
 		Handler: mux,
 	}
 
