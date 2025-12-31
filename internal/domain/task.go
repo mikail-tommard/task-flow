@@ -8,13 +8,13 @@ type Task struct {
 	userID      int
 }
 
-func New(id int, title string, description string, userID int) (*Task, error) {
+func New(title string, description string, userID int) (*Task, error) {
 	if title == "" {
 		return nil, ErrInvalidTitle
 	}
 
 	return &Task{
-		id:          id,
+		id:          0,
 		title:       title,
 		description: description,
 		done:        false,
