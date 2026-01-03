@@ -32,4 +32,6 @@ task-flow/
     broker/
   migrations/
   docker-compose.yml
+  Makefile
+  .env
 ```
