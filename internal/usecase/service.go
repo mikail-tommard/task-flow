@@ -16,6 +16,7 @@ type Repository interface {
 type Input struct {
 	Title       string
 	Description string
+	Done        bool
 	UserID      int
 }
 
@@ -40,7 +41,7 @@ func (s *Service) CreateTask(ctx context.Context, input Input) (*domain.Task, er
 		return nil, err
 	}
 
-	return domain.FromStorage(id, input.Title, input.Description, input.UserID), nil
+	return domain.FromStorage(id, input.Title, input.Done, input.Description, input.UserID), nil
 }
 
 func (s *Service) GetTask(ctx context.Context, id int) (*domain.Task, error) {
