@@ -22,7 +22,7 @@ func New(title string, description string, userID int) (*Task, error) {
 	}, nil
 }
 
-func FromStorage(id int, title string, done bool,description string, userID int) *Task {
+func FromStorage(id int, title string, done bool, description string, userID int) *Task {
 	return &Task{
 		id:          id,
 		title:       title,
