@@ -9,3 +9,6 @@ migrate-down:
 
 migrate-force:
 	migrate -path $(MIGRATIONS_DIR) -database "$(DB_DSN)" force $(V)
+
+fmt:
+	@go fmt ./...

@@ -58,6 +58,6 @@ func (s *Service) CompleteTask(ctx context.Context, id int) error {
 	}
 
 	t.Complete()
-	
+
 	return nil
 }
