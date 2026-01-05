@@ -12,8 +12,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//"postgres://taskflow:taskflow@localhost:5433/taskflow?sslmode=disable"
-
 func TestRepo_CreateAndGetByID(t *testing.T) {
 	cfg := config.New()
 
@@ -32,6 +30,13 @@ func TestRepo_CreateAndGetByID(t *testing.T) {
 	repo := New(db)
 
 	ctx := context.Background()
+
+	var userID int
+	err = db.QueryRow(`INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id`,
+		"test@example.com", "hash").Scan(&userID)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	task, err := domain.New("test title", "test desc", 1)
 	if err != nil {
