@@ -16,15 +16,17 @@ type Config struct {
 func New() *Config {
 	_ = godotenv.Load()
 
-	dbPort := os.Getenv("DB_PORT")
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASS")
-	dbName := os.Getenv("DB_NAME")
-
 	return &Config{
-		DBPort: dbPort,
-		DBUser: dbUser,
-		DBPass: dbPass,
-		DBName: dbName,
+		DBPort: getEnv("DB_PORT", "5433"),
+		DBUser: getEnv("DB_USER", "tasksflowuser"),
+		DBPass: getEnv("DB_PASS", "tasksflowpass"),
+		DBName: getEnv("DB_NAME", "taskflowdb"),
 	}
+}
+
+func getEnv(key, defaultValue string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return  value
+	}
+	return defaultValue
 }
