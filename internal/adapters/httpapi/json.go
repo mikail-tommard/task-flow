@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-func writeError(w http.ResponseWriter, statusCode int, err error) {
-	writeJSON(w, statusCode, map[string]string{"error": err.Error()})
+func writeError(w http.ResponseWriter, statusCode int, err string) {
+	writeJSON(w, statusCode, map[string]string{"error": err})
 }
 
 func writeJSON(w http.ResponseWriter, statusCode int, data interface{}) {
