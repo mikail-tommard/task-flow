@@ -88,3 +88,42 @@ func (a *API) getTask(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, resp)
 }
+
+func (a *API) listByUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		writeError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	id := r.PathValue("userId")
+	if id == "" {
+		writeError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	tasks, err := a.svc.ListTasks(r.Context(), i)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var resp []taskResponse
+
+	for _, t := range tasks {
+		resp = append(resp, taskResponse{
+			ID:          t.ID(),
+			Title:       t.Title(),
+			Description: t.Description(),
+			Done:        t.Done(),
+			UserID:      t.UserID(),
+		})
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
