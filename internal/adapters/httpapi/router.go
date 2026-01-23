@@ -22,6 +22,7 @@ func (a *API) Routes() http.Handler {
 	mux.HandleFunc("GET /health", a.health)
 
 	mux.HandleFunc("POST /tasks", a.createTask)
+	mux.HandleFunc("GET /task/{id}", a.getTask)
 
 	return mux
 }
