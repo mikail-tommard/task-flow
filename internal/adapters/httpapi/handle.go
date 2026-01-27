@@ -14,12 +14,18 @@ type createTaskRequest struct {
 	UserID      int    `json:"user_id"`
 }
 
-type taskResponse struct{
+type taskResponse struct {
 	ID          int    `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Done        bool   `json:"done"`
 	UserID      int    `json:"user_id"`
+}
+
+type updateTaskRequest struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Done        *bool   `json:"done"`
 }
 
 func (a *API) health(w http.ResponseWriter, r *http.Request) {
@@ -123,6 +129,48 @@ func (a *API) listByUser(w http.ResponseWriter, r *http.Request) {
 			Done:        t.Done(),
 			UserID:      t.UserID(),
 		})
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
+
+func (a *API) updateTask(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPatch {
+		writeError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	idstr := r.PathValue("id")
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	var req updateTaskRequest
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	t, err := a.svc.UpdateTask(r.Context(), usecase.UpdateTaskInput{
+		ID: id,
+		Title: req.Title,
+		Description: req.Description,
+		Done: req.Done,
+	})
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp := taskResponse{
+		ID:          t.ID(),
+		Title:       t.Title(),
+		Description: t.Description(),
+		Done:        t.Done(),
+		UserID:      t.UserID(),
 	}
 
 	writeJSON(w, http.StatusOK, resp)

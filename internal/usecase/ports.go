@@ -23,3 +23,10 @@ type Input struct {
 type Service struct {
 	repo Repository
 }
+
+type UpdateTaskInput struct {
+	ID          int
+	Title       *string
+	Description *string
+	Done        *bool
+}

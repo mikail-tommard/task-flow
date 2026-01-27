@@ -36,10 +36,6 @@ func (t *Task) Complete() {
 	t.done = true
 }
 
-func (t *Task) Rename(title string) {
-	t.title = title
-}
-
 func (t *Task) ID() int {
 	return t.id
 }
@@ -58,4 +54,18 @@ func (t *Task) UserID() int {
 
 func (t *Task) Done() bool {
 	return t.done
+}
+
+func (t *Task) Rename(title string) error {
+	if title == "" {
+		return ErrInvalidTitle
+	}
+	
+	t.title = title
+
+	return nil
+}
+
+func (t *Task) ChangeDescription(description string) {
+	t.description = description
 }

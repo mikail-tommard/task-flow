@@ -44,3 +44,28 @@ func (s *Service) CompleteTask(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (s *Service) UpdateTask(ctx context.Context, input UpdateTaskInput) (*domain.Task, error) {
+	t, err := s.repo.GetByID(ctx, input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	if input.Title != nil {
+		if err := t.Rename(*input.Title); err != nil {
+			return nil, err
+		}
+	}
+	if input.Description != nil {
+		t.ChangeDescription(*input.Description)
+	}
+	if input.Done != nil && *input.Done {
+		t.Complete()
+	}
+
+	if err := s.repo.Update(ctx, t); err != nil {
+		return nil, err
+	}
+
+	return t, nil
+}
