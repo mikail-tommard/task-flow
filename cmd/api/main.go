@@ -1,10 +1,15 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	_ "github.com/lib/pq"
 
@@ -30,10 +35,29 @@ func main() {
 	mux := httpapi.New(svc)
 
 	srv := http.Server{
-		Addr:    ":8080",
-		Handler: mux.Routes(),
+		Addr:              ":8080",
+		Handler:           mux.Routes(),
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       60 * time.Second,
 	}
 
-	fmt.Println("Starting server on", srv.Addr)
-	srv.ListenAndServe()
+	go func() {
+		fmt.Println("Starting server on", srv.Addr)
+		srv.ListenAndServe()
+	}()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	<-stop
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Println("shutdown error: ", err)
+	}
+
+	_ = db.Close()
 }
