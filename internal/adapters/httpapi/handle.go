@@ -39,8 +39,7 @@ func (a *API) createTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req createTaskRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
+	if err := decodeJSON(w, r, &req); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
 		return
 	}
