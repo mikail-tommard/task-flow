@@ -31,7 +31,7 @@ func writeJSON(w http.ResponseWriter, statusCode int, data interface{}) {
 }
 
 func decodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
-	r.Body = http.MaxBytesReader(w, r.Body, 1 << 20)
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
@@ -44,4 +44,4 @@ func decodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 		return fmt.Errorf("invalid json")
 	}
 	return nil
-} 
+}
