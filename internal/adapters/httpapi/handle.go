@@ -34,14 +34,14 @@ func (a *API) health(w http.ResponseWriter, r *http.Request) {
 
 func (a *API) createTask(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		writeError(w, http.StatusMethodNotAllowed, "method not allowed")
+		writeError(w, http.StatusMethodNotAllowed, "method not allowed", "method not allowed")
 		return
 	}
 
 	var req createTaskRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request")
+		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
 		return
 	}
 
@@ -53,7 +53,7 @@ func (a *API) createTask(w http.ResponseWriter, r *http.Request) {
 	t, err := a.svc.CreateTask(r.Context(), in)
 
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		writeError(w, http.StatusInternalServerError, err.Error(), err.Error())
 		return
 	}
 
@@ -62,25 +62,25 @@ func (a *API) createTask(w http.ResponseWriter, r *http.Request) {
 
 func (a *API) getTask(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeError(w, http.StatusMethodNotAllowed, "method not allowed")
+		writeError(w, http.StatusMethodNotAllowed, "method not allowed", "method not allowed")
 		return
 	}
 
 	id := r.PathValue("id")
 	if id == "" {
-		writeError(w, http.StatusBadRequest, "invalid request")
+		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
 		return
 	}
 
 	i, err := strconv.Atoi(id)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request")
+		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
 		return
 	}
 
 	t, err := a.svc.GetTask(r.Context(), i)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		writeError(w, http.StatusInternalServerError, err.Error(), err.Error())
 		return
 	}
 
@@ -97,25 +97,25 @@ func (a *API) getTask(w http.ResponseWriter, r *http.Request) {
 
 func (a *API) listByUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeError(w, http.StatusMethodNotAllowed, "method not allowed")
+		writeError(w, http.StatusMethodNotAllowed, "method not allowed", "method not allowed")
 		return
 	}
 
 	id := r.PathValue("userId")
 	if id == "" {
-		writeError(w, http.StatusBadRequest, "invalid request")
+		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
 		return
 	}
 
 	i, err := strconv.Atoi(id)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request")
+		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
 		return
 	}
 
 	tasks, err := a.svc.ListTasks(r.Context(), i)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		writeError(w, http.StatusInternalServerError, err.Error(), err.Error())
 		return
 	}
 
@@ -136,32 +136,32 @@ func (a *API) listByUser(w http.ResponseWriter, r *http.Request) {
 
 func (a *API) updateTask(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPatch {
-		writeError(w, http.StatusMethodNotAllowed, "method not allowed")
+		writeError(w, http.StatusMethodNotAllowed, "method not allowed", "method not allowed")
 		return
 	}
 
 	idstr := r.PathValue("id")
 	id, err := strconv.Atoi(idstr)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request")
+		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
 		return
 	}
 
 	var req updateTaskRequest
 	err = json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request")
+		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
 		return
 	}
 
 	t, err := a.svc.UpdateTask(r.Context(), usecase.UpdateTaskInput{
-		ID: id,
-		Title: req.Title,
+		ID:          id,
+		Title:       req.Title,
 		Description: req.Description,
-		Done: req.Done,
+		Done:        req.Done,
 	})
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		writeError(w, http.StatusInternalServerError, err.Error(), err.Error())
 		return
 	}
 

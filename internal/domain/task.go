@@ -60,7 +60,7 @@ func (t *Task) Rename(title string) error {
 	if title == "" {
 		return ErrInvalidTitle
 	}
-	
+
 	t.title = title
 
 	return nil
