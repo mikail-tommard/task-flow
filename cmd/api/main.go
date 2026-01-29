@@ -34,9 +34,16 @@ func main() {
 	svc := usecase.NewService(repo)
 	mux := httpapi.New(svc)
 
+	handler := httpapi.Chain(
+		mux.Routes(),
+		httpapi.Recover,
+		httpapi.RequestID,
+		httpapi.Logging,
+	)
+
 	srv := http.Server{
 		Addr:              ":8080",
-		Handler:           mux.Routes(),
+		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,
