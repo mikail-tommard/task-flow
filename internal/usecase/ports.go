@@ -13,15 +13,35 @@ type Repository interface {
 	Update(ctx context.Context, task *domain.Task) error
 }
 
+type RepositoryUser interface {
+	Create(ctx context.Context, user *domain.User) (int, error)
+	GetByEmail(ctx context.Context, email string) (*domain.User, error)
+}
+
+type PasswordHasher interface {
+	Hash(password string) (string, error)
+	Compare(hash, password string) bool
+}
+
+type Service struct {
+	repo Repository
+}
+
+type AuthService struct {
+	repo RepositoryUser
+	hasher PasswordHasher
+}
+
+type InputUser struct {
+	Email    string
+	Password string
+}
+
 type Input struct {
 	Title       string
 	Description string
 	Done        bool
 	UserID      int
-}
-
-type Service struct {
-	repo Repository
 }
 
 type UpdateTaskInput struct {
