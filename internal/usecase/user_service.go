@@ -8,10 +8,10 @@ import (
 
 func NewServiceUser(repo RepositoryUser, hasher PasswordHasher) *AuthService {
 	return &AuthService{
-		repo: repo,
+		repo:   repo,
 		hasher: hasher,
 	}
-} 
+}
 
 func (s *AuthService) CreateUser(ctx context.Context, input InputUser) (*domain.User, error) {
 	hash, err := s.hasher.Hash(input.Password)

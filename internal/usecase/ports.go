@@ -28,7 +28,7 @@ type Service struct {
 }
 
 type AuthService struct {
-	repo RepositoryUser
+	repo   RepositoryUser
 	hasher PasswordHasher
 }
 
