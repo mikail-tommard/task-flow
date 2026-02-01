@@ -20,7 +20,11 @@ type RepositoryUser interface {
 
 type PasswordHasher interface {
 	Hash(password string) (string, error)
-	Compare(hash, password string) bool
+	Compare(hash, password string) error
+}
+
+type TokenIssuer interface {
+	GenerateToken(id int, email string) (string, error)
 }
 
 type Service struct {
@@ -30,6 +34,7 @@ type Service struct {
 type AuthService struct {
 	repo   RepositoryUser
 	hasher PasswordHasher
+	tokens TokenIssuer
 }
 
 type InputUser struct {

@@ -28,9 +28,9 @@ func FromStorageUser(id int, email string, passwordHash string) *User {
 func (u *User) UserID() int {
 	return u.id
 }
-func (u *User) EmailUser() string {
+func (u *User) Email() string {
 	return u.email
 }
-func (u *User) PasswordHashUser() string {
+func (u *User) PasswordHash() string {
 	return u.passwordHash
 }

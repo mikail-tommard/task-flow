@@ -72,3 +72,21 @@ func (s *Service) GenerateToken(id int, email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(s.secret)
 }
+
+func (s *Service) ParseToken(tokenStr string) (*Claims, error) {
+	tok, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+		if t.Method != jwt.SigningMethodHS256 {
+			return nil, errors.New("unpexted signing method")
+		}
+		return s.secret, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := tok.Claims.(*Claims)
+	if !ok || !tok.Valid {
+		return nil, errors.New("invalid token")
+	}
+	return claims, nil
+}
