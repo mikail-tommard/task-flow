@@ -28,6 +28,16 @@ type updateTaskRequest struct {
 	Done        *bool   `json:"done"`
 }
 
+type registerUserRequest struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
+}
+
+type registerUserResponse struct {
+    ID    int    `json:"id"`
+    Email string `json:"email"`
+}
+
 func (a *API) health(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
@@ -173,4 +183,31 @@ func (a *API) updateTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, resp)
+}
+
+func (a *API) registerUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		writeError(w, http.StatusMethodNotAllowed, "method not allowed", "method not allowed")
+		return
+	}
+
+	var req registerUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
+	}
+
+	user, err := a.svcAuth.CreateUser(r.Context(), usecase.InputUser{
+		Email: req.Email,
+		Password: req.Password,
+	})
+
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error(), err.Error())
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, registerUserResponse{
+		ID: user.UserID(),
+		Email: user.Email(),
+	})
 }

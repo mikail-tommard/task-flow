@@ -15,6 +15,7 @@ import (
 
 	"github.com/mikail-tommard/task-flow/internal/adapters/httpapi"
 	"github.com/mikail-tommard/task-flow/internal/adapters/repository"
+	"github.com/mikail-tommard/task-flow/internal/adapters/security"
 	"github.com/mikail-tommard/task-flow/internal/config"
 	"github.com/mikail-tommard/task-flow/internal/usecase"
 )
@@ -30,9 +31,14 @@ func main() {
 	defer db.Close()
 
 	repo := repository.New(db)
+	repoAuth := repository.NewUserRepo(db)
+
+	hash := security.NewBcryptHasher(10)
 
 	svc := usecase.NewService(repo)
-	mux := httpapi.New(svc)
+	svcAuth := usecase.NewAuthService(repoAuth, hash)
+	
+	mux := httpapi.New(svc, svcAuth)
 
 	handler := httpapi.Chain(
 		mux.Routes(),
