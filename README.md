@@ -1,10 +1,13 @@
 # task-flow
+
 Сервис задач
 
 ## Описание
+
 task-flow - сервис для управление задачами пользователя. Данные сохраняются в PostgreSQL. RabbitMQ - используется для асинхронных уведомлений
 
 ## Стек
+
 1. Go(net/htto)
 2. PostgreSQL
 3. RabbitMQ
@@ -37,16 +40,19 @@ task-flow/
 ```
 
 ## Как запускать сервис
+
 Если используешь Docker-compose и Makefile:
+
 ```bash
 docker-compose up -d
 make migrate-up
-make run
+make runs
 ```
 
 make run - поднимает API
 
 Если Makefile нет и команды другие, используй прямые команды:
+
 ```bash
 docker-compose up -d
 migrate -path $MIGRATION_DIR -database $DB_DSN up

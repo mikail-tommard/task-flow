@@ -6,12 +6,18 @@ import (
 	"encoding/hex"
 	"log"
 	"net/http"
+	"strings"
 	"time"
+
+	"github.com/mikail-tommard/task-flow/internal/adapters/token"
 )
 
 type ctxKey string
 
-const requestIDKey ctxKey = "request_id"
+const (
+	requestIDKey ctxKey = "request_id"
+	ctxUserID ctxKey = "user_id"
+)
 
 type middleware func(http.Handler) http.Handler
 
@@ -97,4 +103,28 @@ func Recover(next http.Handler) http.Handler {
 		}()
 		next.ServeHTTP(w, r)
 	})
+}
+
+func Auth(jwt *token.Service) middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			h := r.Header.Get("Authorization")
+			const prefix = "Bearer "
+			if !strings.HasPrefix(h, prefix) {
+				http.Error(w, "missing token", http.StatusUnauthorized)
+				return 
+			}
+
+			raw := strings.TrimSpace(strings.TrimPrefix(h, prefix))
+			claims, err := jwt.ParseToken(raw)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusUnauthorized)
+				return 
+			}
+
+			ctx := context.WithValue(r.Context(), ctxUserID, claims.ID)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
 }
