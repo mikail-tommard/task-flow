@@ -59,12 +59,12 @@ func (s *Service) GenerateToken(id int, email string) (string, error) {
 	}
 	now := time.Now()
 	claims := Claims{
-		ID: id,
+		ID:    id,
 		Email: email,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer: s.issuer,
-			Subject: email,
-			IssuedAt: jwt.NewNumericDate(now),
+			Issuer:    s.issuer,
+			Subject:   email,
+			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(now.Add(s.accessTTL)),
 		},
 	}

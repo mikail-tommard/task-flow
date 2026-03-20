@@ -16,7 +16,7 @@ type ctxKey string
 
 const (
 	requestIDKey ctxKey = "request_id"
-	ctxUserID ctxKey = "user_id"
+	ctxUserID    ctxKey = "user_id"
 )
 
 type middleware func(http.Handler) http.Handler
@@ -112,14 +112,14 @@ func Auth(jwt *token.Service) middleware {
 			const prefix = "Bearer "
 			if !strings.HasPrefix(h, prefix) {
 				http.Error(w, "missing token", http.StatusUnauthorized)
-				return 
+				return
 			}
 
 			raw := strings.TrimSpace(strings.TrimPrefix(h, prefix))
 			claims, err := jwt.ParseToken(raw)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusUnauthorized)
-				return 
+				return
 			}
 
 			ctx := context.WithValue(r.Context(), ctxUserID, claims.ID)

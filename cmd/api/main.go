@@ -16,6 +16,7 @@ import (
 	"github.com/mikail-tommard/task-flow/internal/adapters/httpapi"
 	"github.com/mikail-tommard/task-flow/internal/adapters/repository"
 	"github.com/mikail-tommard/task-flow/internal/adapters/security"
+	"github.com/mikail-tommard/task-flow/internal/adapters/token"
 	"github.com/mikail-tommard/task-flow/internal/config"
 	"github.com/mikail-tommard/task-flow/internal/usecase"
 )
@@ -37,8 +38,16 @@ func main() {
 
 	svc := usecase.NewService(repo)
 	svcAuth := usecase.NewAuthService(repoAuth, hash)
-	
-	mux := httpapi.New(svc, svcAuth)
+	jwt, err := token.NewServiceJWT(token.Config{
+		Secret:    []byte(cfg.JWTSecret),
+		AccessTTL: 15 * time.Minute,
+		Issuer:    cfg.Issuer,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mux := httpapi.New(svc, svcAuth, jwt)
 
 	handler := httpapi.Chain(
 		mux.Routes(),

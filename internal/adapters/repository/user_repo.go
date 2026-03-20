@@ -41,9 +41,9 @@ func (r *RepoUser) GetByEmail(ctx context.Context, email string) (*domain.User, 
 	`
 
 	var (
-		id int
+		id        int
 		emailUser string
-		hash string
+		hash      string
 	)
 
 	err := r.db.QueryRowContext(ctx, q, email).Scan(&id, &emailUser, &hash)

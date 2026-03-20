@@ -7,20 +7,24 @@ import (
 )
 
 type Config struct {
-	DBPort string
-	DBUser string
-	DBPass string
-	DBName string
+	DBPort    string
+	DBUser    string
+	DBPass    string
+	DBName    string
+	JWTSecret string
+	Issuer    string
 }
 
 func New() *Config {
 	_ = godotenv.Load()
 
 	return &Config{
-		DBPort: getEnv("DB_PORT", "5433"),
-		DBUser: getEnv("DB_USER", "tasksflowuser"),
-		DBPass: getEnv("DB_PASS", "tasksflowpass"),
-		DBName: getEnv("DB_NAME", "taskflowdb"),
+		DBPort:    getEnv("DB_PORT", "5433"),
+		DBUser:    getEnv("DB_USER", "tasksflowuser"),
+		DBPass:    getEnv("DB_PASS", "tasksflowpass"),
+		DBName:    getEnv("DB_NAME", "taskflowdb"),
+		JWTSecret: getEnv("JWT_SECRET", ""),
+		Issuer:    getEnv("ISSUER", ""),
 	}
 }
 

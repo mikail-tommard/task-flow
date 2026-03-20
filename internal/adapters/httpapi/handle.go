@@ -29,13 +29,13 @@ type updateTaskRequest struct {
 }
 
 type registerUserRequest struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 type registerUserResponse struct {
-    ID    int    `json:"id"`
-    Email string `json:"email"`
+	ID    int    `json:"id"`
+	Email string `json:"email"`
 }
 
 func (a *API) health(w http.ResponseWriter, r *http.Request) {
@@ -197,7 +197,7 @@ func (a *API) registerUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := a.svcAuth.CreateUser(r.Context(), usecase.InputUser{
-		Email: req.Email,
+		Email:    req.Email,
 		Password: req.Password,
 	})
 
@@ -207,7 +207,7 @@ func (a *API) registerUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusCreated, registerUserResponse{
-		ID: user.UserID(),
+		ID:    user.UserID(),
 		Email: user.Email(),
 	})
 }

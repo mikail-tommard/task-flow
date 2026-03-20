@@ -3,18 +3,21 @@ package httpapi
 import (
 	"net/http"
 
+	"github.com/mikail-tommard/task-flow/internal/adapters/token"
 	"github.com/mikail-tommard/task-flow/internal/usecase"
 )
 
 type API struct {
-	svc *usecase.Service
+	svc     *usecase.Service
 	svcAuth *usecase.AuthService
+	jwt     *token.Service
 }
 
-func New(svc *usecase.Service, svcAuth *usecase.AuthService) *API {
+func New(svc *usecase.Service, svcAuth *usecase.AuthService, jwt *token.Service) *API {
 	return &API{
-		svc: svc,
+		svc:     svc,
 		svcAuth: svcAuth,
+		jwt:     jwt,
 	}
 }
 
@@ -23,7 +26,9 @@ func (a *API) Routes() http.Handler {
 
 	mux.HandleFunc("GET /health", a.health)
 
-	mux.HandleFunc("POST /tasks", a.createTask)
+	mux.Handle("POST /tasks", Chain(http.HandlerFunc(a.createTask),
+		Auth(a.jwt),
+	))
 	mux.HandleFunc("GET /task/{id}", a.getTask)
 	mux.HandleFunc("GET /tasks/{userId}", a.listByUser)
 	mux.HandleFunc("PATH /task/{id}", a.updateTask)
