@@ -11,7 +11,6 @@ import (
 type createTaskRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	UserID      int    `json:"user_id"`
 }
 
 type taskResponse struct {
@@ -38,6 +37,15 @@ type registerUserResponse struct {
 	Email string `json:"email"`
 }
 
+type loginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type loginResponse struct {
+	Token string `json:"token"`
+}
+
 func (a *API) health(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
@@ -54,10 +62,16 @@ func (a *API) createTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID, ok := r.Context().Value(ctxUserID).(int)
+	if !ok {
+		writeError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
+		return
+	}
+
 	in := usecase.Input{
 		Title:       req.Title,
 		Description: req.Description,
-		UserID:      req.UserID,
+		UserID:      userID,
 	}
 	t, err := a.svc.CreateTask(r.Context(), in)
 
@@ -209,5 +223,28 @@ func (a *API) registerUser(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, registerUserResponse{
 		ID:    user.UserID(),
 		Email: user.Email(),
+	})
+}
+
+func (a *API) loginUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		writeError(w, http.StatusMethodNotAllowed, "method not allowed", "method not allowed")
+		return
+	}
+
+	var req loginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request", "invalid request")
+		return
+	}
+
+	token, err := a.svcAuth.Login(r.Context(), req.Email, req.Password)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid credential", "invalid credential")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, loginResponse{
+		Token: token,
 	})
 }

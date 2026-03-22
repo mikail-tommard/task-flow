@@ -37,7 +37,6 @@ func main() {
 	hash := security.NewBcryptHasher(10)
 
 	svc := usecase.NewService(repo)
-	svcAuth := usecase.NewAuthService(repoAuth, hash)
 	jwt, err := token.NewServiceJWT(token.Config{
 		Secret:    []byte(cfg.JWTSecret),
 		AccessTTL: 15 * time.Minute,
@@ -46,6 +45,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	svcAuth := usecase.NewAuthService(repoAuth, hash, jwt)
 
 	mux := httpapi.New(svc, svcAuth, jwt)
 

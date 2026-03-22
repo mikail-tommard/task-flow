@@ -7,10 +7,11 @@ import (
 	"github.com/mikail-tommard/task-flow/internal/domain"
 )
 
-func NewAuthService(repo RepositoryUser, hasher PasswordHasher) *AuthService {
+func NewAuthService(repo RepositoryUser, hasher PasswordHasher, tokens TokenIssuer) *AuthService {
 	return &AuthService{
 		repo:   repo,
 		hasher: hasher,
+		tokens: tokens,
 	}
 }
 
